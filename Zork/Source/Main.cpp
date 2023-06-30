@@ -41,9 +41,24 @@ int main()
 			}
 			else
 			{
-				//Save player actions
-				//TODO: Handle multiple actions and spaces
-				gameActions.push_back(playerInput);		
+				std::string temp;
+				for (char c : playerInput)
+				{
+					if (c == ' ')
+					{
+						if (!temp.empty())
+						{
+							gameActions.push_back(temp);
+							temp.clear();
+						}
+					}
+					else
+						temp.push_back(c);	
+				}	
+
+				if (!temp.empty()) {
+					gameActions.push_back(temp);
+				}
 			}
 		}
 
