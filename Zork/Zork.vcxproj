@@ -139,11 +139,27 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Source\Creature.cpp" />
+    <ClCompile Include="Source\Entity.cpp" />
+    <ClCompile Include="Source\Exit.cpp" />
     <ClCompile Include="Source\Globals.cpp" />
+    <ClCompile Include="Source\Item.cpp" />
     <ClCompile Include="Source\Main.cpp" />
+    <ClCompile Include="Source\NPC.cpp" />
+    <ClCompile Include="Source\Player.cpp" />
+    <ClCompile Include="Source\Room.cpp" />
+    <ClCompile Include="Source\World.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Source\Creature.h" />
+    <ClInclude Include="Source\Entity.h" />
+    <ClInclude Include="Source\Exit.h" />
     <ClInclude Include="Source\Globals.h" />
+    <ClInclude Include="Source\Item.h" />
+    <ClInclude Include="Source\NPC.h" />
+    <ClInclude Include="Source\Player.h" />
+    <ClInclude Include="Source\Room.h" />
+    <ClInclude Include="Source\World.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
