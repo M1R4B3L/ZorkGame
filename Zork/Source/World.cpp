@@ -3,10 +3,49 @@
 #include "World.h"
 #include "Timer.h"
 #include "Entity.h"
+#include "Creature.h"
+#include "Player.h"
+#include "NPC.h"
+#include "Exit.h"
+#include "Room.h"
+#include "Item.h"
 
 World::World()
 {
 	timer = new Timer;
+
+	//ROOMS
+	Room* bridge = new Room(EntityType::Room, "Bridge", "");
+	Room* riverbank = new Room(EntityType::Room, "Riverbank", "");
+	Room* ricefields = new Room(EntityType::Room, "Rice Fields", "");
+	Room* fGasStation = new Room(EntityType::Room, "Front Gas Station", "");
+	Room* bGasStation = new Room(EntityType::Room, "Back Gas Station", "");
+	Room* iGasStation = new Room(EntityType::Room, "Inside Gas Station", "");
+
+	entities.push_back(bridge);
+	entities.push_back(riverbank);
+	entities.push_back(ricefields);
+	entities.push_back(fGasStation);
+	entities.push_back(bGasStation);
+	entities.push_back(iGasStation);
+
+	//Items (Looteable)
+	Item* truck = new Item(EntityType::Item, "Truck", "", bridge, ItemType::Other);
+	{
+		Item* ring = new Item(EntityType::Item, "Ring", "Diamond Ring, What is this for?", truck, ItemType::Other);
+		Item* invoice = new Item(EntityType::Item, "Invoice", "Invoice, paper", truck, ItemType::Other);
+
+		entities.push_back(truck);
+		entities.push_back(ring);
+		entities.push_back(invoice);
+	}
+	Item* backpack = new Item(EntityType::Item, "BackPack", "", riverbank, ItemType::Other);
+
+	entities.push_back(backpack);
+
+
+	Player* player = new Player(EntityType::Player, "Pam", "", ricefields);
+	entities.push_back(player);
 }
 
 World::~World()
@@ -44,12 +83,15 @@ void World::Loop()
 bool World::ExecuteActions(std::vector<std::string>& actions)
 {
     bool ret = true;
-
    
     if (_strcmpi(actions[0].c_str(), "look") == 0)
     {
         
     }
+	else if (_strcmpi(actions[0].c_str(), "go") == 0)
+	{
+
+	}
     else
     {
         std::cout << "Invalid action used!\n";
