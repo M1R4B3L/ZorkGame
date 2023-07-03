@@ -142,7 +142,7 @@
     <ClCompile Include="Source\Creature.cpp" />
     <ClCompile Include="Source\Entity.cpp" />
     <ClCompile Include="Source\Exit.cpp" />
-    <ClCompile Include="Source\Globals.cpp" />
+    <ClCompile Include="Source\Timer.cpp" />
     <ClCompile Include="Source\Item.cpp" />
     <ClCompile Include="Source\Main.cpp" />
     <ClCompile Include="Source\NPC.cpp" />
@@ -154,7 +154,7 @@
     <ClInclude Include="Source\Creature.h" />
     <ClInclude Include="Source\Entity.h" />
     <ClInclude Include="Source\Exit.h" />
-    <ClInclude Include="Source\Globals.h" />
+    <ClInclude Include="Source\Timer.h" />
     <ClInclude Include="Source\Item.h" />
     <ClInclude Include="Source\NPC.h" />
     <ClInclude Include="Source\Player.h" />

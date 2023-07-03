@@ -17,6 +17,10 @@ Creature::~Creature()
 {
 }
 
+void Creature::Update()
+{
+}
+
 bool Creature::isAlive() const
 {
 	return health < 0;

@@ -13,6 +13,7 @@ public:
 	Creature(EntityType type, const char* name, const char* description, Room* location, int level = 1);
 	virtual ~Creature();
 
+	virtual void Update();
 
 	bool isAlive() const;
 

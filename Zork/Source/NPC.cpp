@@ -8,3 +8,7 @@ NPC::NPC(EntityType _type, const char* _name, const char* _description, Room* _l
 NPC::~NPC()
 {
 }
+
+void NPC::Update()
+{
+}

@@ -21,6 +21,8 @@ public:
 	Entity(EntityType type, const char* name, const char* description, Entity* parent = nullptr);
 	virtual ~Entity();
 
+	virtual void Update();
+
 public:
 
 	EntityType entityType;

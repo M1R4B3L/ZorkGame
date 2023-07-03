@@ -10,3 +10,7 @@ Entity::Entity(EntityType _type, const char* _name, const char* _description, En
 Entity::~Entity()
 {
 }
+
+void Entity::Update()
+{
+}

@@ -1,14 +1,15 @@
 #include <iostream>
 #include <conio.h>
 #include <vector>
-#include "Globals.h"
+#include "Timer.h"
+#include "World.h"
 
 
 int main()
-{
-	char key;	
-	std::string playerInput;			
+{	
 	std::vector<std::string> gameActions;
+
+	World newWorld;
 
 	//Mantain CMD Open
 	while (1)
@@ -16,71 +17,26 @@ int main()
 		//PLAYER INPUT
 		// -----------------------------------------------------------
 		//See if player pressed a key
-		if (_kbhit() != 0)
-		{
-			//Get key value
-			key = _getch();
-		
-			if (key == '\b') //Backspace, erase last key pressed
-			{
-				if (!playerInput.empty())
-				{
-					playerInput.pop_back();
-					std::cout << '\b' << ' ' << '\b';
-				}
-			}
-			else if(key == '\x1b')
-			{
-				if(!gameActions.empty())
-					gameActions.push_back("quit");
-			}
-			else if (key != '\r')
-			{
-				playerInput += key;
-				std::cout << key;
-			}
-			else
-			{
-				std::string temp;
-				for (char c : playerInput)
-				{
-					if (c == ' ')
-					{
-						if (!temp.empty())
-						{
-							gameActions.push_back(temp);
-							temp.clear();
-						}
-					}
-					else
-						temp.push_back(c);	
-				}	
-
-				if (!temp.empty()) {
-					gameActions.push_back(temp);
-				}
-			}
-		}
+		newWorld.HandleInput(newWorld.inputs, gameActions);
 
 		//GAME LOOP
 		// -----------------------------------------------------------
-		//Handle if game action is quit
-		if (!gameActions.empty() && Equals(gameActions[0], "quit"))
-			break;
-
 		//TODO: Handle all game actions
-
-		
+		if (!gameActions.empty() && _strcmpi(gameActions[0].c_str(), "quit") == 0)
+			break;
+	
+		if (newWorld.Play(gameActions) == false)
+			
 		//Handle next game action
 		if (!gameActions.empty())
 		{
 			gameActions.clear();
-			playerInput = "";
-			std::cout << '-';
+			newWorld.inputs = "";
+			std::cout << '[' <<  ']';
 		}
 	}
 
-	std::cout << "\nThanks for playing";
+	std::cout << "Thanks for playing";
 
 	return 0;
 }

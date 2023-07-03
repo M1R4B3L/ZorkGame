@@ -11,6 +11,7 @@ public:
 	~NPC();
 
 	//TODO: Need update to comprovate if player is room Attack him
+	void Update();
 
 public:
 
