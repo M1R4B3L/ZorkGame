@@ -15,6 +15,8 @@ public:
 
 	virtual void Update();
 
+	virtual void Look(std::vector<std::string>& str) const;
+
 	bool isAlive() const;
 
 public:
@@ -25,7 +27,6 @@ public:
 	int level;
 	Item* weapon;
 	Item* armor;
-	Item* potion;
 
 	Creature* target;
 };

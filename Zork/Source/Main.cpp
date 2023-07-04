@@ -2,6 +2,7 @@
 #include <conio.h>
 #include <vector>
 #include "Timer.h"
+#include "Utils.h"
 #include "World.h"
 
 
@@ -22,17 +23,17 @@ int main()
 		//GAME LOOP
 		// -----------------------------------------------------------
 		//TODO: Handle all game actions
-		if (!gameActions.empty() && _strcmpi(gameActions[0].c_str(), "quit") == 0)
+		if (!gameActions.empty() && Equals(gameActions[0], "quit"))
 			break;
 	
-		if (newWorld.Play(gameActions) == false)
+		newWorld.Play(gameActions);
 			
 		//Handle next game action
 		if (!gameActions.empty())
 		{
 			gameActions.clear();
 			newWorld.inputs = "";
-			std::cout << '[' <<  ']';
+			std::cout << '>';
 		}
 	}
 

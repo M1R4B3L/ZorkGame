@@ -11,3 +11,8 @@ Player::Player(EntityType _type, const char* _name, const char* _description, Ro
 Player::~Player()
 {
 }
+
+void Player::Look(std::vector<std::string>& action) const
+{
+	parent->Look();
+}

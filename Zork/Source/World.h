@@ -6,6 +6,7 @@
 #include "Timer.h"
 
 class Entity;
+class Player;
 
 class World
 {
@@ -29,4 +30,5 @@ public:
 	//World Options
 	std::string worldName;
 	std::list<Entity*> entities;
+	Player* player;
 };

@@ -2,6 +2,7 @@
 #include <conio.h>
 #include "World.h"
 #include "Timer.h"
+#include "Utils.h"
 #include "Entity.h"
 #include "Creature.h"
 #include "Player.h"
@@ -17,7 +18,7 @@ World::World()
 	//ROOMS
 	Room* bridge = new Room(EntityType::Room, "Bridge", "");
 	Room* riverbank = new Room(EntityType::Room, "Riverbank", "");
-	Room* ricefields = new Room(EntityType::Room, "Rice Fields", "");
+	Room* ricefields = new Room(EntityType::Room, "RiceFields", "");
 	Room* fGasStation = new Room(EntityType::Room, "Front Gas Station", "");
 	Room* bGasStation = new Room(EntityType::Room, "Back Gas Station", "");
 	Room* iGasStation = new Room(EntityType::Room, "Inside Gas Station", "");
@@ -44,7 +45,7 @@ World::World()
 	entities.push_back(backpack);
 
 
-	Player* player = new Player(EntityType::Player, "Pam", "", ricefields);
+	player = new Player(EntityType::Player, "Pam", "", ricefields);
 	entities.push_back(player);
 }
 
@@ -83,19 +84,38 @@ void World::Loop()
 bool World::ExecuteActions(std::vector<std::string>& actions)
 {
     bool ret = true;
-   
-    if (_strcmpi(actions[0].c_str(), "look") == 0)
-    {
-        
-    }
-	else if (_strcmpi(actions[0].c_str(), "go") == 0)
+	
+	if (actions.size() == 1)
+	{
+		//Look around current location
+		if (Equals(actions[0], "look"))
+		{
+			player->Look(actions);
+		}
+		else if (Equals(actions[0], "stats"))
+		{
+
+		}
+		else if (Equals(actions[0], "inventory"))
+		{
+			 
+		}
+		else if (Equals(actions[0], "fish"))
+		{
+			
+		}
+		else if (Equals(actions[0], "pet"))
+		{
+
+		}
+	}
+	else if (actions.size() == 2)
 	{
 
 	}
     else
     {
         std::cout << "Invalid action used!\n";
-        
         ret = false;
     }
 
@@ -155,8 +175,8 @@ bool World::HandleInput(std::string& playerInput, std::vector<std::string>& args
 
 			if (!temp.empty()) {
 				args.push_back(temp);
+				std::cout << '\n';
 			}
-			std::cout << '\n';
 		}
 	}
 
