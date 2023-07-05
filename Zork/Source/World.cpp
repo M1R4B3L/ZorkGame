@@ -30,25 +30,70 @@ World::World()
 	entities.push_back(parking);
 	entities.push_back(kombini);
 
-	//Items (Looteable)
-	Item* truck = new Item(EntityType::Item, "Truck", "", bridge, ItemType::Container);
-	{
-		Item* ring = new Item(EntityType::Item, "Ring", "Diamond Ring, What is this for?", truck, ItemType::Other);
-		Item* invoice = new Item(EntityType::Item, "Invoice", "Invoice, paper", truck, ItemType::Other);
+	//NPC
+	NPC* dog = new NPC(EntityType::NPC, "Max", " pet of the couple", street, false);
+	NPC* vincent = new NPC(EntityType::NPC, "Vincent", " shady guy, he's unconscious", riverbank, false);
+	NPC* will = new NPC(EntityType::NPC, "Will", " shady guy, he has a weapon be carefull", kombini, true);
+	NPC* lewis = new NPC(EntityType::NPC, "Lewis", " husban, unconscious right now", bridge, false);
 
-		entities.push_back(truck);
-		entities.push_back(ring);
-		entities.push_back(invoice);
-	}
+	entities.push_back(dog);
+	entities.push_back(vincent);
+	entities.push_back(will);
+	entities.push_back(lewis);
 
+	//ITEMS
+
+	//Bridge
+	Item* truck = new Item(EntityType::Item, "Truck", " Stopped truck in the middle of the road", bridge, ItemType::Container);
+	Item* ring = new Item(EntityType::Item, "Ring", " Diamond Ring, What is this for?", truck, ItemType::Other);
+	Item* invoice = new Item(EntityType::Item, "Invoice", " Invoice, paper", truck, ItemType::Other);
+
+	entities.push_back(truck);
+	entities.push_back(ring);
+	entities.push_back(invoice);
+
+	//Riverbank
 	Item* backpack = new Item(EntityType::Item, "BackPack", "", riverbank, ItemType::Other);
-	Item* rod = new Item(EntityType::Item, "FishRod", "", riverbank, ItemType::Weapon);
-
-	Item* key = new Item(EntityType::Item, "bkey", "opens the backdoor of the kombini store", backpack, ItemType::Other);
+	Item* key = new Item(EntityType::Item, "bkey", " opens the backdoor of the kombini store", backpack, ItemType::Other);
+	Item* vest = new Item(EntityType::Item, "vest", " small vest, increases health when equiped", backpack, ItemType::Armor);
+	vest->value = 5;
+	Item* rod = new Item(EntityType::Item, "FishRod", " old rod, it still works?", riverbank, ItemType::Weapon);
 
 	entities.push_back(backpack);
-	entities.push_back(rod);
+	entities.push_back(vest);
 	entities.push_back(key);
+	entities.push_back(rod);
+
+	//Ricefields
+	Item* shovel = new Item(EntityType::Item, "Shovel", " shovel with a name engraved: Pam", vincent, ItemType::Weapon);
+	shovel->value = 5;
+	Item* letter = new Item(EntityType::Item, "letter", " bloddy paper:\n VINCENT!, KILL THE COUPLE AND GET THE RING", vincent, ItemType::Other);
+	Item* ckey = new Item(EntityType::Item, "ckey", " car keys", vincent, ItemType::Other);
+
+	entities.push_back(shovel);
+	entities.push_back(letter);
+	entities.push_back(ckey);
+
+	//Street
+	Item* car = new Item(EntityType::Item, "Car", " crashed car", street, ItemType::Container);
+	Item* stick = new Item(EntityType::Item, "Stick", " drooled weapon", dog, ItemType::Weapon);
+	stick->value = 2;
+	Item* collar = new Item(EntityType::Item, "Collar", " I'm Max, if lost call the local Kombini", dog, ItemType::Other);
+
+	entities.push_back(car);
+	entities.push_back(stick);
+	entities.push_back(collar);
+
+	//Parking
+
+	//Kombini
+	Item* crowbar = new Item(EntityType::Item, "Crowbar", " irron weapon", will, ItemType::Weapon);
+	crowbar->value = 5;
+	Item* vest2 = vest;
+	vest2->ChangeParent(will);
+
+	entities.push_back(crowbar);
+	entities.push_back(vest2);
 
 	//EXITS
 	Exit* riceStreet = new Exit(EntityType::Exit, "path", " -> ", "East", ricefields, street);
@@ -71,8 +116,6 @@ World::World()
 	rod->ChangeParent(player);
 	backpack->ChangeParent(player);
 
-	NPC* dog = new NPC(EntityType::NPC, "Max", "pet of the couple", street, false);
-	entities.push_back(dog);
 }
 
 World::~World()
