@@ -13,6 +13,9 @@ public:
 	//TODO: Need update to comprovate if player is room Attack him
 	void Update();
 
+	void Go(std::string& dir) override;
+	void Attack(std::string& target) override;
+
 public:
 
 	bool hostile;

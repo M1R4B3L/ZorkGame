@@ -15,7 +15,8 @@ public:
 
 	virtual void Update();
 
-	virtual void Look(std::vector<std::string>& str) const;
+	virtual void Go(std::string& dir);
+	virtual void Attack(std::string& target);
 
 	bool isAlive() const;
 

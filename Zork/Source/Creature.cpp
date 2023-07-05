@@ -9,7 +9,6 @@ Creature::Creature(EntityType _type, const char* _name, const char* _description
 
 	weapon = nullptr;
 	armor = nullptr;
-	potion = nullptr;
 	target = nullptr;
 }
 
@@ -21,7 +20,11 @@ void Creature::Update()
 {
 }
 
-void Creature::Look(std::vector<std::string>& str) const
+void Creature::Go(std::string& dir)
+{
+}
+
+void Creature::Attack(std::string& dir)
 {
 }
 

@@ -2,6 +2,7 @@
 
 #include <string>
 #include <list>
+#include <vector>
 
 enum class EntityType
 {
@@ -22,7 +23,14 @@ public:
 	virtual ~Entity();
 
 	virtual void Update();
+
 	void Look() const;
+	void GetChildrenByType(std::vector<Entity*>& entities, EntityType type) const;
+
+	void RemoveChild(Entity* entity);
+	void AddChild(Entity* entity);
+
+	void ChangeParent(Entity* entity);
 
 public:
 

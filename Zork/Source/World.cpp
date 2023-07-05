@@ -19,19 +19,19 @@ World::World()
 	Room* bridge = new Room(EntityType::Room, "Bridge", "");
 	Room* riverbank = new Room(EntityType::Room, "Riverbank", "");
 	Room* ricefields = new Room(EntityType::Room, "RiceFields", "");
-	Room* fGasStation = new Room(EntityType::Room, "Front Gas Station", "");
-	Room* bGasStation = new Room(EntityType::Room, "Back Gas Station", "");
-	Room* iGasStation = new Room(EntityType::Room, "Inside Gas Station", "");
+	Room* street = new Room(EntityType::Room, "Streets", "");
+	Room* parking = new Room(EntityType::Room, "Parking", "");
+	Room* kombini = new Room(EntityType::Room, "Kombini", "");
 
 	entities.push_back(bridge);
 	entities.push_back(riverbank);
 	entities.push_back(ricefields);
-	entities.push_back(fGasStation);
-	entities.push_back(bGasStation);
-	entities.push_back(iGasStation);
+	entities.push_back(street);
+	entities.push_back(parking);
+	entities.push_back(kombini);
 
 	//Items (Looteable)
-	Item* truck = new Item(EntityType::Item, "Truck", "", bridge, ItemType::Other);
+	Item* truck = new Item(EntityType::Item, "Truck", "", bridge, ItemType::Container);
 	{
 		Item* ring = new Item(EntityType::Item, "Ring", "Diamond Ring, What is this for?", truck, ItemType::Other);
 		Item* invoice = new Item(EntityType::Item, "Invoice", "Invoice, paper", truck, ItemType::Other);
@@ -41,16 +41,45 @@ World::World()
 		entities.push_back(invoice);
 	}
 	Item* backpack = new Item(EntityType::Item, "BackPack", "", riverbank, ItemType::Other);
+	Item* rod = new Item(EntityType::Item, "FishRod", "", riverbank, ItemType::Weapon);
+
+	Item* key = new Item(EntityType::Item, "bkey", "opens the backdoor of the kombini store", backpack, ItemType::Other);
 
 	entities.push_back(backpack);
+	entities.push_back(rod);
+	entities.push_back(key);
+
+	//EXITS
+	Exit* riceStreet = new Exit(EntityType::Exit, "path", " -> ", "East", ricefields, street);
+	Exit* streetBridge = new Exit(EntityType::Exit, "highway", " -> ", "South", street, bridge);
+	Exit* streetParking = new Exit(EntityType::Exit, "barrier", " -> ", "East", street, parking);
+	Exit* parkingRiver = new Exit(EntityType::Exit, "stairs", " -> ", "South", parking, riverbank);
+	Exit* parkingKombini = new Exit(EntityType::Exit, "backdoor", " -> ", "Door", parking, kombini, true, key);
+
+	entities.push_back(riceStreet);
+	entities.push_back(streetBridge);
+	entities.push_back(streetParking);
+	entities.push_back(parkingRiver);
+	entities.push_back(parkingKombini);
 
 
 	player = new Player(EntityType::Player, "Pam", "", ricefields);
 	entities.push_back(player);
+	player->weapon = nullptr;
+	player->armor = nullptr;
+	player->children.push_back(backpack);
+	player->children.push_back(key);
+
+	NPC* dog = new NPC(EntityType::NPC, "Max", "pet of the couple", street, false);
+	entities.push_back(dog);
 }
 
 World::~World()
 {
+	for (std::list<Entity*>::iterator it = entities.begin(); it != entities.end(); ++it)
+		delete *it;
+
+	entities.clear();
 }
 
 bool World::Play(std::vector<std::string>& actions)
@@ -59,6 +88,9 @@ bool World::Play(std::vector<std::string>& actions)
 
     if (!actions.empty())
         ret = ExecuteActions(actions);
+
+	if(ret == false)
+		std::cout << "Invalid action used!\n";
 
     Loop();
 
@@ -90,32 +122,66 @@ bool World::ExecuteActions(std::vector<std::string>& actions)
 		//Look around current location
 		if (Equals(actions[0], "look"))
 		{
-			player->Look(actions);
+			player->Look();
 		}
 		else if (Equals(actions[0], "stats"))
 		{
-
+			player->GetStats();
 		}
 		else if (Equals(actions[0], "inventory"))
 		{
-			 
+			player->GetInventory();
 		}
 		else if (Equals(actions[0], "fish"))
 		{
-			
+			player->Fish();
 		}
 		else if (Equals(actions[0], "pet"))
 		{
-
+			player->Pet();
 		}
+		else
+			ret = false;
 	}
 	else if (actions.size() == 2)
 	{
-
+		if (Equals(actions[0], "go"))
+		{
+			player->Go(actions[1]);
+		}
+		else if(Equals(actions[0], "examine") || Equals(actions[0], "inspect"))
+		{
+			player->Examine(actions[1]);
+		}
+		else if(Equals(actions[0], "take") || Equals(actions[0], "grab"))
+		{
+			player->Take(actions[1]);
+		}
+		else if(Equals(actions[0], "drop"))
+		{
+			player->Drop(actions[1]);
+		}
+		else if(Equals(actions[0], "equip"))
+		{
+			player->Equip(actions[1]);
+		}
+		else if (Equals(actions[0], "unequip"))
+		{
+			player->UnEquip(actions[1]);
+		}
+		else if (Equals(actions[0], "unlock"))
+		{
+			player->UnLock(actions[1]);
+		}
+		else if (Equals(actions[0], "attack"))
+		{
+			player->Attack(actions[1]);
+		}
+		else
+			ret = false;
 	}
     else
     {
-        std::cout << "Invalid action used!\n";
         ret = false;
     }
 
