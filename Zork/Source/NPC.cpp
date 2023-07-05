@@ -64,8 +64,8 @@ void NPC::Go(std::string& dir)
 				{
 					Room* temp = (Room*)parent;
 
-					parent->ChangeParent(exit->destination);
-					exit->parent->ChangeParent(exit->destination);
+					this->ChangeParent(exit->destination);
+					exit->ChangeParent(exit->destination);
 
 					exit->destination = temp;			//Change exit destination to the previous room
 					exit->ChangeDir(dir);

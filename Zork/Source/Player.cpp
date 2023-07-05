@@ -111,14 +111,28 @@ void Player::Fish()
 	{
 		if (fish == nullptr && weapon == rod)
 		{
-			fish = new Item(EntityType::Item, "Seabass", "Large fish, can be used as a wepon?", this, ItemType::Weapon);
-			std::cout << "I caught a Seabass! No, wait...it's at least a C++\n";
+			if (Equals(parent->name, "riverbank"))
+			{
+				fish = new Item(EntityType::Item, "Seabass", "Large fish, can be used as a wepon?", this, ItemType::Weapon);
+				std::cout << "I caught a Seabass! No, wait...it's at least a C++\n";
+			}
+			else
+				std::cout << "!You are trying to fish in the asphalt, find a water surface.\n";
+		}
+		else if (fish != nullptr && weapon == rod)
+		{
+			if (Equals(parent->name, "riverbank"))
+				std::cout << "Not even a nibble.\n";
+			else
+				std::cout << "!You are trying to fish in the asphalt, find a water surface.\n";
 		}
 		else
-			std::cout << "FishRod has not been equiped\n";
+			std::cout << "FishRod is not equiped\n";
 	}
 	else
-		std::cout << "FishRod has not been found\n";
+		std::cout << "Try finding a Fishrod first!\n";
+
+
 }
 
 void Player::Pet() const
@@ -166,8 +180,8 @@ void Player::Go(std::string& dir)
 				{
 					Room* temp = (Room*)parent;
 
-					parent->ChangeParent(exit->destination);
-					exit->parent->ChangeParent(exit->destination);
+					this->ChangeParent(exit->destination);
+					exit->ChangeParent(exit->destination);
 
 					exit->destination = temp;			//Change exit destination to the previous room
 					exit->ChangeDir(dir);
@@ -200,10 +214,90 @@ void Player::Drop(std::string& item)
 
 void Player::Equip(std::string& item)
 {
+	Item* equiped = nullptr;
+	for (std::list<Entity*>::const_iterator it = children.cbegin(); it != children.cend(); ++it)
+		if (Equals((*it)->name, item))
+			equiped = (Item*)(*it);
+
+	if (equiped != nullptr)
+	{
+		if (equiped->itemType == ItemType::Weapon) //Nothing Equiped
+		{
+			if (weapon != nullptr)
+			{
+				if(Equals(weapon->name, equiped->name))
+					std::cout << equiped->name << " already equiped.\n";
+				else
+				{
+					UnEquip(weapon->name);
+					weapon = equiped;
+					strength += equiped->value;
+					std::cout << equiped->name << " has been equiped in weapon slot.\n";
+				}
+			}
+			else
+			{
+				weapon = equiped;
+				strength += equiped->value;
+				std::cout << equiped->name << " has been equiped in weapon slot.\n";
+			}
+		}
+		else if (armor == nullptr && equiped->itemType == ItemType::Armor) //Nothing Equiped
+		{
+			if (armor != nullptr)
+			{
+				if (Equals(armor->name, equiped->name))
+					std::cout << equiped->name << " already equiped.\n";
+				else
+				{
+					UnEquip(armor->name);
+					armor = equiped;
+					strength += equiped->value;
+					std::cout << equiped->name << " has been equiped in armor slot.\n";
+				}
+			}
+			else
+			{
+				armor = equiped;
+				health += equiped->value;
+				std::cout << equiped->name << " has been equiped in armor slot.\n";
+			}
+		}
+		else
+		{
+			std::cout << equiped->name << " cannot be equiped.\n";
+		}
+	}
+	else
+		std::cout << "You don't that item in your inventory\n.";
 }
 
 void Player::UnEquip(std::string& item)
 {
+	if (weapon != nullptr)
+	{
+		if (Equals(item, weapon->name))
+		{
+			strength -= weapon->value;
+			std::cout << weapon->name << "has been unequiped.\n";
+			weapon = nullptr;
+		}
+		else
+			std::cout << "That item is not equiped in weapon\n";
+	}
+	else if (armor != nullptr)
+	{
+		if (Equals(item, armor->name))
+		{
+			health -= armor->value;
+			std::cout << armor->name << "has been unequiped.\n";
+			armor = nullptr;
+		}
+		else
+			std::cout << "That item is not equiped in armor slot\n";
+	}
+	else
+		std::cout << "You have no items in weapon or armor slots";
 }
 
 void Player::UnLock(std::string& exit)

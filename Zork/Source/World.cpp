@@ -40,6 +40,7 @@ World::World()
 		entities.push_back(ring);
 		entities.push_back(invoice);
 	}
+
 	Item* backpack = new Item(EntityType::Item, "BackPack", "", riverbank, ItemType::Other);
 	Item* rod = new Item(EntityType::Item, "FishRod", "", riverbank, ItemType::Weapon);
 
@@ -67,8 +68,8 @@ World::World()
 	entities.push_back(player);
 	player->weapon = nullptr;
 	player->armor = nullptr;
-	player->children.push_back(backpack);
-	player->children.push_back(key);
+	rod->ChangeParent(player);
+	backpack->ChangeParent(player);
 
 	NPC* dog = new NPC(EntityType::NPC, "Max", "pet of the couple", street, false);
 	entities.push_back(dog);
