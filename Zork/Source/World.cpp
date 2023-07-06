@@ -21,7 +21,7 @@ World::World()
 	Room* ricefields = new Room(EntityType::Room, "RiceFields", "Cultivating Ricefields, at east is the Street");
 	Room* street = new Room(EntityType::Room, "Street", "Deserted road, west of it are the RiceFields and at east a Parking, \nbetween them, there is a Kombini with the main door blocked by a crashed car. \nMax is there");
 	Room* parking = new Room(EntityType::Room, "Parking", "Car parking lot, there are the Backdoor of the Kombini and the Riverbank at south");
-	Room* kombini = new Room(EntityType::Room, "Kombini", "Ah!, there is a burglar inside your Kombini defete him fast");
+	Room* kombini = new Room(EntityType::Room, "Kombini", "Ah!, there is a burglar inside your Kombini defeat him as fast as possible");
 
 	entities.push_back(bridge);
 	entities.push_back(riverbank);
@@ -91,11 +91,11 @@ World::World()
 	crowbar->value = 5;
 	Item* cone = new Item(EntityType::Item, "Cone", "traffic cone, it gives armor: Health +2", will, ItemType::Armor);
 	cone->value = 2;
+
 	will->weapon = crowbar;
 	will->armor = cone;
-
-	will->children.push_back(crowbar);
-	will->children.push_back(cone);
+	will->strength += crowbar->value;
+	will->health += cone->value;
 
 	entities.push_back(crowbar);
 	entities.push_back(cone);
@@ -196,10 +196,6 @@ void World::ExecuteActions(std::vector<std::string>& actions)
 		{
 			player->Take(actions[1]);
 		}
-		else if(Equals(actions[0], "drop"))
-		{
-			player->Drop(actions[1]);
-		}
 		else if(Equals(actions[0], "equip"))
 		{
 			player->Equip(actions[1]);
@@ -219,9 +215,18 @@ void World::ExecuteActions(std::vector<std::string>& actions)
 		else
 			std::cout << "I don't recognise that verb " << actions[0] << '\n';
 	}
+	else if (actions.size() == 3)
+	{
+		if (Equals(actions[0], "drop"))
+		{
+			player->Drop(actions[1], actions[2]);
+		}
+		else
+		std::cout << "I don't recognise that verb " << actions[0] << '\n';
+	}
     else
     {
-		std::cout << "Two are the maximun words neeed!\n";
+		std::cout << "Three are the maximun words neeed!\n";
     }
 
 }

@@ -128,7 +128,8 @@ void NPC::GetKnockOut(int damage, std::vector<std::string>& actions)
 	if (isUnconscious())
 	{
 		std::cout << "Congratulations for saving your Kombini from the burglars.\n";
-		std::cout << "quit";	//Close game
+		std::cout << "quit\n";	//Close game
+		actions.clear();
 		actions.push_back("quit");
 	}
 	else
@@ -142,10 +143,8 @@ void NPC::KnockOut(std::string& str, std::vector<std::string>& actions)
 		if (Equals(target->name, str))
 		{
 			std::cout << name << " attack to "<< target->name << " succeded ->";
-			if(weapon != nullptr)
-				target->GetKnockOut(weapon->value, actions);
-			else
-				target->GetKnockOut(strength, actions);
+
+			target->GetKnockOut(strength, actions);
 
 			hostile = false;
 		}

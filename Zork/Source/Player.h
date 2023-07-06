@@ -20,7 +20,7 @@ public:
 
 	void Examine(std::string& str);
 	void Take(std::string& item);
-	void Drop(std::string& item);
+	void Drop(std::string& item, std::string& wh);
 	void Equip(std::string& item);
 	void UnEquip(std::string& item);
 	void UnLock(std::string& exit);

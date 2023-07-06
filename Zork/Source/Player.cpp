@@ -115,7 +115,7 @@ void Player::Fish()
 			if (Equals(parent->name, "riverbank"))
 			{
 				fish = new Item(EntityType::Item, "Seabass", "Large fish, can be used as a wepon?\nStats: Strength +10", this, ItemType::Weapon);
-				fish->value = 10;
+				fish->value = 15;
 				std::cout << "I caught a Seabass! No, wait...it's at least a C++\n";
 			}
 			else
@@ -305,33 +305,70 @@ void Player::Take(std::string& item)
 		std::cout << "Cloud not find an item with that name.\n";
 }
 
-void Player::Drop(std::string& item)
+void Player::Drop(std::string& item, std::string& wh)
 {
 	Entity* drop = nullptr;
-	for (std::list<Entity*>::const_iterator it = parent->children.cbegin(); it != parent->children.cend(); ++it)
+	for (std::list<Entity*>::const_iterator it = children.cbegin(); it != children.cend(); ++it)
 		if (Equals((*it)->name, item))
 			drop = (*it);
 
-	std::vector<Entity*> Npc;
-	parent->GetChildrenByType(Npc, EntityType::NPC);
+	Entity* wher = nullptr;
+	for (std::list<Entity*>::const_iterator it = parent->children.cbegin(); it != parent->children.cend(); ++it)
+		if (Equals((*it)->name, wh))
+			wher = (*it);
 
-	if (drop == nullptr)
+	std::vector<Entity*> roomNpc;
+	parent->GetChildrenByType(roomNpc, EntityType::NPC);
+
+	std::vector<Entity*> roomItems;
+	parent->GetChildrenByType(roomItems, EntityType::Item);
+
+
+	if (wher == nullptr)
 	{
-		for (std::vector<Entity*>::const_iterator npcs = Npc.cbegin(); npcs != Npc.cend(); ++npcs)
+		if (!roomNpc.empty())
 		{
-			for (std::list<Entity*>::const_iterator items = (*npcs)->children.cbegin(); items != (*npcs)->children.cend(); ++items)
-				if (Equals((*items)->name, item))
-					drop = (*items);
+			for (std::vector<Entity*>::const_iterator npcs = roomNpc.cbegin(); npcs != roomNpc.cend(); ++npcs)
+			{
+				if (Equals((*npcs)->name, wh))
+					wher = (*npcs);
+			}
+		}
+		//Items inside other items
+		if (!roomItems.empty())
+		{
+			for (std::vector<Entity*>::const_iterator items = roomItems.cbegin(); items != roomItems.cend(); ++items)
+			{
+				if (((Item*)(*items))->itemType == ItemType::Container)
+				{
+					if (Equals((*items)->name, wh))
+						wher = (*items);
+				}
+			}
+		}
+
+		if (Equals(parent->name, wh))
+		{
+			wher = parent;
 		}
 	}
 
-	if (drop != nullptr && drop->entityType == EntityType::Item)
+	if (wher != nullptr && drop->entityType == EntityType::Item)
 	{	
-		std::cout << "You have dropped " << drop->name << " from " << drop->parent->name << '\n';
-		drop->ChangeParent(parent);	
+		std::cout << "You have dropped " << drop->name << " in " << wher->name << '\n';
+		drop->ChangeParent(wher);	
+
+		if(((Item*)(drop))->itemType == ItemType::Weapon && drop == weapon)
+		{
+			UnEquip(drop->name);
+		}
+		else if(((Item*)(drop))->itemType == ItemType::Armor &&  drop == armor)
+		{
+			UnEquip(drop->name);
+		}
 	}
 	else
-		std::cout << "Cloud not find an item with that name.\n";
+		std::cout << "Cloud not find an item with that name in your inventory or location is not correct.\n";
 }
 
 void Player::Equip(std::string& item)
@@ -401,7 +438,7 @@ void Player::UnEquip(std::string& item)
 		if (Equals(item, weapon->name))
 		{
 			strength -= weapon->value;
-			std::cout << weapon->name << "has been unequiped.\n";
+			std::cout << weapon->name << " has been unequiped.\n";
 			weapon = nullptr;
 		}
 		else
@@ -412,7 +449,7 @@ void Player::UnEquip(std::string& item)
 		if (Equals(item, armor->name))
 		{
 			health -= armor->value;
-			std::cout << armor->name << "has been unequiped.\n";
+			std::cout << armor->name << " has been unequiped.\n";
 			armor = nullptr;
 		}
 		else
@@ -442,7 +479,7 @@ void Player::UnLock(std::string& exit)
 
 	if (item != nullptr)
 	{
-		std::cout << item->name << " used to unlock the" << ext->name << '\n';
+		std::cout << item->name << " used to unlock the " << ext->name << '\n';
 		ext->lock = false;
 	}
 	else
@@ -460,7 +497,8 @@ void Player::GetKnockOut(int damage, std::vector<std::string>& actions)
 	if (isUnconscious())
 	{
 		std::cout << "You failed, your Kombini has been destroyed burglar escaped.\n";
-		std::cout << "quit";	//Close game
+		std::cout << "quit\n";	//Close game
+		actions.clear();
 		actions.push_back("quit");
 	}
 	else
@@ -478,14 +516,13 @@ void Player::KnockOut(std::string& str, std::vector<std::string>& actions)
 	if (trgt != nullptr)
 	{
 		target = trgt;
+
 		std::cout << name << " attack to " << target->name << " succeded ->";
-		if (weapon != nullptr)
-			trgt->GetKnockOut(weapon->value, actions);
-		else
-			trgt->GetKnockOut(strength, actions);
+
+		trgt->GetKnockOut(strength, actions);
 	}
 	else
-		std::cout << "In " << parent->name << " there is no one called" << str <<  ".\n";
+		std::cout << "In " << parent->name << " there is no one called " << str <<  ".\n";
 
 }
 

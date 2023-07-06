@@ -47,5 +47,7 @@ int main()
 	std::cout << "Thanks for playing!";
 	std::cout << "------------------------------------------------------------------------\n";
 
+	system("pause");
+
 	return 0;
 }
