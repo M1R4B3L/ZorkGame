@@ -8,6 +8,10 @@
 
 int main()
 {	
+
+	std::cout << "Welcome to my zork game, by Adrian\n";
+	std::cout << "------------------------------------------------------------------------\n";
+
 	std::vector<std::string> gameActions;
 
 	World newWorld;
@@ -23,11 +27,14 @@ int main()
 		//GAME LOOP
 		// -----------------------------------------------------------
 		//TODO: Handle all game actions
+		if(!gameActions.empty() && Equals(gameActions[0], "quit"))
+			break;
+
+		newWorld.Play(gameActions);
+		
 		if (!gameActions.empty() && Equals(gameActions[0], "quit"))
 			break;
-	
-		newWorld.Play(gameActions);
-			
+
 		//Handle next game action
 		if (!gameActions.empty())
 		{
@@ -37,7 +44,8 @@ int main()
 		}
 	}
 
-	std::cout << "Thanks for playing";
+	std::cout << "Thanks for playing!";
+	std::cout << "------------------------------------------------------------------------\n";
 
 	return 0;
 }

@@ -25,7 +25,10 @@ public:
 	void UnEquip(std::string& item);
 	void UnLock(std::string& exit);
 
-	void Attack(std::string& target) override;
+	void GetKnockOut(int damage, std::vector<std::string>& actions) override;
+	void KnockOut(std::string& target, std::vector<std::string>& actions) override;
+
+	void EndGame(std::vector<std::string>& actions);
 
 public:
 	Item* fish;

@@ -6,6 +6,7 @@
 #include "Item.h"
 #include "Exit.h"
 #include "Room.h"
+#include "NPC.h"
 
 
 Player::Player(EntityType _type, const char* _name, const char* _description, Room* _loc) :
@@ -39,12 +40,12 @@ void Player::GetStats() const
 		if (temp->itemType == ItemType::Weapon)
 		{
 			if (weapon != nullptr)
-				std::cout << "- Weapon: " << temp->name << " +str " << temp->value << '\n';
+				std::cout << "- Weapon: " << temp->name << '\n';
 		}
 		else if (temp->itemType == ItemType::Armor)
 		{
 			if (armor != nullptr)
-				std::cout << "- Armor: " << temp->name << " +hp " << temp->value << '\n';
+				std::cout << "- Armor: " << temp->name << '\n';
 		}
 	}
 }
@@ -113,7 +114,8 @@ void Player::Fish()
 		{
 			if (Equals(parent->name, "riverbank"))
 			{
-				fish = new Item(EntityType::Item, "Seabass", "Large fish, can be used as a wepon?", this, ItemType::Weapon);
+				fish = new Item(EntityType::Item, "Seabass", "Large fish, can be used as a wepon?\nStats: Strength +10", this, ItemType::Weapon);
+				fish->value = 10;
 				std::cout << "I caught a Seabass! No, wait...it's at least a C++\n";
 			}
 			else
@@ -186,8 +188,7 @@ void Player::Go(std::string& dir)
 					exit->destination = temp;			//Change exit destination to the previous room
 					exit->ChangeDir(dir);
 
-					std::cout << "Going through a " << exit->name << " from: " << exit->destination->name << exit->description << exit->parent->name << '\n';
-
+					std::cout << "Using " << dir << " exit: " << exit->description << '\n';
 					Look();
 					correctExit = true;
 					break;
@@ -202,14 +203,135 @@ void Player::Go(std::string& dir)
 
 void Player::Examine(std::string& str)
 {
+	Entity* examine = nullptr;
+	for (std::list<Entity*>::const_iterator it = parent->children.cbegin(); it != parent->children.cend(); ++it)
+	{
+		if (Equals(str, (*it)->name) || ((*it)->entityType == EntityType::Exit && Equals(str, ((Exit*)(*it))->destination->name)))
+		{
+			examine = (*it);
+			break;
+		}
+	}
+
+	if (examine == nullptr)
+	{
+		for (std::list<Entity*>::const_iterator i = children.cbegin(); i != children.cend(); ++i)
+		{
+			if (Equals(str, (*i)->name))
+			{
+				examine = (*i);
+				break;
+			}
+		}
+	}
+
+	if (examine != nullptr)
+	{
+		if (examine->entityType == EntityType::Exit)
+			((Exit*)examine)->destination->Look();
+		else if (examine->entityType == EntityType::NPC)
+		{
+			((NPC*)examine)->Look();
+			((NPC*)examine)->GetStats();
+			((NPC*)examine)->GetInventory();
+		}
+		else if (examine->entityType == EntityType::Item && ((Item*)examine)->itemType == ItemType::Container)
+		{
+			for (std::list<Entity*>::const_iterator i = examine->children.cbegin(); i != examine->children.cend(); ++i)
+			{
+				(*i)->Look();
+			}
+		}
+		else
+			examine->Look();
+	}
+	else if (Equals(str, parent->name))
+	{
+		parent->Look();
+	}
+	else
+		std::cout << "Examine is not possible.\n";
 }
 
 void Player::Take(std::string& item)
 {
+	Entity* take = nullptr;
+	for (std::list<Entity*>::const_iterator it = parent->children.cbegin(); it != parent->children.cend(); ++it)
+		if (Equals((*it)->name, item))
+			take = (*it);
+
+	std::vector<Entity*> roomNpc;
+	parent->GetChildrenByType(roomNpc, EntityType::NPC);
+
+	std::vector<Entity*> roomItems;
+	parent->GetChildrenByType(roomItems, EntityType::Item);
+
+	if (take == nullptr)
+	{
+		if (!roomNpc.empty())
+		{
+			for (std::vector<Entity*>::const_iterator npcs = roomNpc.cbegin(); npcs != roomNpc.cend(); ++npcs)
+			{
+				for (std::list<Entity*>::const_iterator i = (*npcs)->children.cbegin(); i != (*npcs)->children.cend(); ++i)
+					if (Equals((*i)->name, item))
+						take = (*i);
+			}
+		}
+
+		//Items inside other items
+		if (!roomItems.empty())
+		{
+			for (std::vector<Entity*>::const_iterator items = roomItems.cbegin(); items != roomItems.cend(); ++items)
+			{
+				if (((Item*)(*items))->itemType == ItemType::Container)
+				{
+					for (std::list<Entity*>::const_iterator j = (*items)->children.cbegin(); j != (*items)->children.cend(); ++j)
+						if (Equals((*j)->name, item))
+							take = (*j);
+				}
+			}
+		}
+	}
+
+	if (take != nullptr && take->entityType == EntityType::Item)
+	{
+		if (!(((Item*)take)->itemType == ItemType::Container))
+		{
+			std::cout << "You have taken " << take->name << " from " << take->parent->name << '\n';
+			take->ChangeParent(this);
+		}
+	}
+	else
+		std::cout << "Cloud not find an item with that name.\n";
 }
 
 void Player::Drop(std::string& item)
 {
+	Entity* drop = nullptr;
+	for (std::list<Entity*>::const_iterator it = parent->children.cbegin(); it != parent->children.cend(); ++it)
+		if (Equals((*it)->name, item))
+			drop = (*it);
+
+	std::vector<Entity*> Npc;
+	parent->GetChildrenByType(Npc, EntityType::NPC);
+
+	if (drop == nullptr)
+	{
+		for (std::vector<Entity*>::const_iterator npcs = Npc.cbegin(); npcs != Npc.cend(); ++npcs)
+		{
+			for (std::list<Entity*>::const_iterator items = (*npcs)->children.cbegin(); items != (*npcs)->children.cend(); ++items)
+				if (Equals((*items)->name, item))
+					drop = (*items);
+		}
+	}
+
+	if (drop != nullptr && drop->entityType == EntityType::Item)
+	{	
+		std::cout << "You have dropped " << drop->name << " from " << drop->parent->name << '\n';
+		drop->ChangeParent(parent);	
+	}
+	else
+		std::cout << "Cloud not find an item with that name.\n";
 }
 
 void Player::Equip(std::string& item)
@@ -297,13 +419,78 @@ void Player::UnEquip(std::string& item)
 			std::cout << "That item is not equiped in armor slot\n";
 	}
 	else
-		std::cout << "You have no items in weapon or armor slots";
+		std::cout << "You have no items in weapon or armor slots\n";
 }
 
 void Player::UnLock(std::string& exit)
 {
+	Exit* ext = nullptr;
+	for (std::list<Entity*>::const_iterator it = parent->children.cbegin(); it != parent->children.cend(); ++it)
+		if (Equals((*it)->name, exit))
+			ext = (Exit*)(*it);
+
+	if (ext == nullptr)
+		std::cout << "No exit in that direction\n";
+
+	if (ext->lock == false)
+		std::cout << "Door already unlocked\n";
+
+	Item* item = nullptr;
+	for (std::list<Entity*>::const_iterator it = children.cbegin(); it != children.cend(); ++it)
+		if (Equals((*it)->name, ext->unlock->name))
+			item = (Item*)(*it);
+
+	if (item != nullptr)
+	{
+		std::cout << item->name << " used to unlock the" << ext->name << '\n';
+		ext->lock = false;
+	}
+	else
+		std::cout << "Correct item not found in your inventory\n";
+	
+
 }
 
-void Player::Attack(std::string& target)
+void Player::GetKnockOut(int damage, std::vector<std::string>& actions)
 {
+
+	std::cout << " Damage: " << damage << ".\n";
+	health -= damage;
+
+	if (isUnconscious())
+	{
+		std::cout << "You failed, your Kombini has been destroyed burglar escaped.\n";
+		std::cout << "quit";	//Close game
+		actions.push_back("quit");
+	}
+	else
+		std::cout << "Wow! You survived the impact " << name << "->Health: " << health << ".\n";
+
 }
+
+void Player::KnockOut(std::string& str, std::vector<std::string>& actions)
+{
+	NPC* trgt = nullptr;
+	for (std::list<Entity*>::const_iterator it = parent->children.cbegin(); it != parent->children.cend(); ++it)
+		if (Equals((*it)->name, str))
+			trgt = (NPC*)(*it);
+
+	if (trgt != nullptr)
+	{
+		target = trgt;
+		std::cout << name << " attack to " << target->name << " succeded ->";
+		if (weapon != nullptr)
+			trgt->GetKnockOut(weapon->value, actions);
+		else
+			trgt->GetKnockOut(strength, actions);
+	}
+	else
+		std::cout << "In " << parent->name << " there is no one called" << str <<  ".\n";
+
+}
+
+void Player::EndGame(std::vector<std::string>& actions)
+{
+	actions.push_back("quit");
+}
+

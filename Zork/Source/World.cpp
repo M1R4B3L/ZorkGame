@@ -16,12 +16,12 @@ World::World()
 	timer = new Timer;
 
 	//ROOMS
-	Room* bridge = new Room(EntityType::Room, "Bridge", "");
-	Room* riverbank = new Room(EntityType::Room, "Riverbank", "");
-	Room* ricefields = new Room(EntityType::Room, "RiceFields", "");
-	Room* street = new Room(EntityType::Room, "Streets", "");
-	Room* parking = new Room(EntityType::Room, "Parking", "");
-	Room* kombini = new Room(EntityType::Room, "Kombini", "");
+	Room* bridge = new Room(EntityType::Room, "Bridge", "Closed Bridge, at north is the Street");
+	Room* riverbank = new Room(EntityType::Room, "Riverbank", "Small land close to the river, at north there's a Parking");
+	Room* ricefields = new Room(EntityType::Room, "RiceFields", "Cultivating Ricefields, at east is the Street");
+	Room* street = new Room(EntityType::Room, "Street", "Deserted road, west of it are the RiceFields and at east a Parking, \nbetween them, there is a Kombini with the main door blocked by a crashed car. \nMax is there");
+	Room* parking = new Room(EntityType::Room, "Parking", "Car parking lot, there are the Backdoor of the Kombini and the Riverbank at south");
+	Room* kombini = new Room(EntityType::Room, "Kombini", "Ah!, there is a burglar inside your Kombini defete him fast");
 
 	entities.push_back(bridge);
 	entities.push_back(riverbank);
@@ -31,10 +31,10 @@ World::World()
 	entities.push_back(kombini);
 
 	//NPC
-	NPC* dog = new NPC(EntityType::NPC, "Max", " pet of the couple", street, false);
-	NPC* vincent = new NPC(EntityType::NPC, "Vincent", " shady guy, he's unconscious", riverbank, false);
-	NPC* will = new NPC(EntityType::NPC, "Will", " shady guy, he has a weapon be carefull", kombini, true);
-	NPC* lewis = new NPC(EntityType::NPC, "Lewis", " husban, unconscious right now", bridge, false);
+	NPC* dog = new NPC(EntityType::NPC, "Max", "pet of the couple", street, false);
+	NPC* vincent = new NPC(EntityType::NPC, "Vincent", "shady guy, he's unconscious", ricefields, false);
+	NPC* will = new NPC(EntityType::NPC, "Will", "burglar, he has a weapon be carefull", kombini, false);
+	NPC* lewis = new NPC(EntityType::NPC, "Lewis", "husban, unconscious right now", bridge, false);
 
 	entities.push_back(dog);
 	entities.push_back(vincent);
@@ -53,11 +53,11 @@ World::World()
 	entities.push_back(invoice);
 
 	//Riverbank
-	Item* backpack = new Item(EntityType::Item, "BackPack", "", riverbank, ItemType::Other);
-	Item* key = new Item(EntityType::Item, "bkey", " opens the backdoor of the kombini store", backpack, ItemType::Other);
-	Item* vest = new Item(EntityType::Item, "vest", " small vest, increases health when equiped", backpack, ItemType::Armor);
+	Item* backpack = new Item(EntityType::Item, "BackPack", "fishing backpack", riverbank, ItemType::Container);
+	Item* key = new Item(EntityType::Item, "DoorKey", "opens the backdoor of the kombini store", backpack, ItemType::Other);
+	Item* vest = new Item(EntityType::Item, "Vest", "small vest, increases health when equiped: Health +5", backpack, ItemType::Armor);
 	vest->value = 5;
-	Item* rod = new Item(EntityType::Item, "FishRod", " old rod, it still works?", riverbank, ItemType::Weapon);
+	Item* rod = new Item(EntityType::Item, "FishRod", "old rod, it still works: Strength +0", riverbank, ItemType::Weapon);
 
 	entities.push_back(backpack);
 	entities.push_back(vest);
@@ -65,20 +65,20 @@ World::World()
 	entities.push_back(rod);
 
 	//Ricefields
-	Item* shovel = new Item(EntityType::Item, "Shovel", " shovel with a name engraved: Pam", vincent, ItemType::Weapon);
+	Item* shovel = new Item(EntityType::Item, "Shovel", "Pam's rusty shovel: Strength +5", vincent, ItemType::Weapon);
 	shovel->value = 5;
-	Item* letter = new Item(EntityType::Item, "letter", " bloddy paper:\n VINCENT!, KILL THE COUPLE AND GET THE RING", vincent, ItemType::Other);
-	Item* ckey = new Item(EntityType::Item, "ckey", " car keys", vincent, ItemType::Other);
+	Item* letter = new Item(EntityType::Item, "Letter", "bloddy paper: VINCENT!, KILL THE COUPLE AND GET THE RING", vincent, ItemType::Other);
+	Item* ckey = new Item(EntityType::Item, "Carkey", "car keys", vincent, ItemType::Other);
 
 	entities.push_back(shovel);
 	entities.push_back(letter);
 	entities.push_back(ckey);
 
 	//Street
-	Item* car = new Item(EntityType::Item, "Car", " crashed car", street, ItemType::Container);
-	Item* stick = new Item(EntityType::Item, "Stick", " drooled weapon", dog, ItemType::Weapon);
+	Item* car = new Item(EntityType::Item, "Car", "crashed car", street, ItemType::Container);
+	Item* stick = new Item(EntityType::Item, "Stick", "drooled weapon: Strength +2", dog, ItemType::Weapon);
 	stick->value = 2;
-	Item* collar = new Item(EntityType::Item, "Collar", " I'm Max, if lost call the local Kombini", dog, ItemType::Other);
+	Item* collar = new Item(EntityType::Item, "Collar", "I'm Max, if lost call the local Kombini", dog, ItemType::Other);
 
 	entities.push_back(car);
 	entities.push_back(stick);
@@ -86,21 +86,26 @@ World::World()
 
 	//Parking
 
-	//Kombini
-	Item* crowbar = new Item(EntityType::Item, "Crowbar", " irron weapon", will, ItemType::Weapon);
+	//Shop
+	Item* crowbar = new Item(EntityType::Item, "Crowbar", "irron weapon: Strength +5", will, ItemType::Weapon);
 	crowbar->value = 5;
-	Item* vest2 = vest;
-	vest2->ChangeParent(will);
+	Item* cone = new Item(EntityType::Item, "Cone", "traffic cone, it gives armor: Health +2", will, ItemType::Armor);
+	cone->value = 2;
+	will->weapon = crowbar;
+	will->armor = cone;
+
+	will->children.push_back(crowbar);
+	will->children.push_back(cone);
 
 	entities.push_back(crowbar);
-	entities.push_back(vest2);
+	entities.push_back(cone);
 
 	//EXITS
-	Exit* riceStreet = new Exit(EntityType::Exit, "path", " -> ", "East", ricefields, street);
-	Exit* streetBridge = new Exit(EntityType::Exit, "highway", " -> ", "South", street, bridge);
-	Exit* streetParking = new Exit(EntityType::Exit, "barrier", " -> ", "East", street, parking);
-	Exit* parkingRiver = new Exit(EntityType::Exit, "stairs", " -> ", "South", parking, riverbank);
-	Exit* parkingKombini = new Exit(EntityType::Exit, "backdoor", " -> ", "Door", parking, kombini, true, key);
+	Exit* riceStreet = new Exit(EntityType::Exit, "path", "connects the Ricefields and the Street ", "East", ricefields, street);
+	Exit* streetBridge = new Exit(EntityType::Exit, "highway", "connects the Bridge and the Street ", "South", street, bridge);
+	Exit* streetParking = new Exit(EntityType::Exit, "barrier", "connects the Parking and the Street ", "East", street, parking);
+	Exit* parkingRiver = new Exit(EntityType::Exit, "stairs", "connects the Parking and the Riverbank ", "South", parking, riverbank);
+	Exit* parkingKombini = new Exit(EntityType::Exit, "backdoor", "connects the Parking and the Kombini ", "Backdoor", parking, kombini, true, key);
 
 	entities.push_back(riceStreet);
 	entities.push_back(streetBridge);
@@ -108,14 +113,13 @@ World::World()
 	entities.push_back(parkingRiver);
 	entities.push_back(parkingKombini);
 
+	player = new Player(EntityType::Player, "Pam", "You, the PLAYER", ricefields);
 
-	player = new Player(EntityType::Player, "Pam", "", ricefields);
 	entities.push_back(player);
-	player->weapon = nullptr;
-	player->armor = nullptr;
-	rod->ChangeParent(player);
-	backpack->ChangeParent(player);
 
+	player->Look();
+
+	std::cout << ">";
 }
 
 World::~World()
@@ -126,30 +130,23 @@ World::~World()
 	entities.clear();
 }
 
-bool World::Play(std::vector<std::string>& actions)
+void World::Play(std::vector<std::string>& actions)
 {
-    bool ret = true;
 
     if (!actions.empty())
-        ret = ExecuteActions(actions);
+        ExecuteActions(actions);
 
-	if(ret == false)
-		std::cout << "Invalid action used!\n";
-
-    Loop();
-
-    return ret;
+    Loop(actions);
 }
 
-void World::Loop()
+void World::Loop(std::vector<std::string>& actions)
 {
-
 	timer->Tick();
-	if (timer->DeltaTime() > timer->GetTimeScale()/2.0f)	//Update each half a sec
+	if (timer->DeltaTime() > timer->GetTimeScale()/2.0f)	//Update each sec
 	{
 		for (std::list<Entity*>::const_iterator it = entities.begin(); it != entities.end(); ++it)
 		{
-			(*it)->Update();
+			(*it)->Update(timer->DeltaTime(), actions);
 		}
 
 		//std::cout << timer->DeltaTime() << '\n';
@@ -157,10 +154,8 @@ void World::Loop()
 	}
 }
 
-bool World::ExecuteActions(std::vector<std::string>& actions)
+void World::ExecuteActions(std::vector<std::string>& actions)
 {
-    bool ret = true;
-	
 	if (actions.size() == 1)
 	{
 		//Look around current location
@@ -185,7 +180,7 @@ bool World::ExecuteActions(std::vector<std::string>& actions)
 			player->Pet();
 		}
 		else
-			ret = false;
+			std::cout << "That's not a valid action!\n";
 	}
 	else if (actions.size() == 2)
 	{
@@ -219,17 +214,16 @@ bool World::ExecuteActions(std::vector<std::string>& actions)
 		}
 		else if (Equals(actions[0], "attack"))
 		{
-			player->Attack(actions[1]);
+			player->KnockOut(actions[1], actions);
 		}
 		else
-			ret = false;
+			std::cout << "I don't recognise that verb " << actions[0] << '\n';
 	}
     else
     {
-        ret = false;
+		std::cout << "Two are the maximun words neeed!\n";
     }
 
-    return ret;
 }
 
 bool World::HandleInput(std::string& playerInput, std::vector<std::string>& args)

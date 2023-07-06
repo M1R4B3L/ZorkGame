@@ -11,12 +11,20 @@ public:
 	~NPC();
 
 	//TODO: Need update to comprovate if player is room Attack him
-	void Update();
+	void Update(int dt, std::vector<std::string>& actions) override;
 
+	void GetStats() const;
+	void GetInventory() const;
 	void Go(std::string& dir) override;
-	void Attack(std::string& target) override;
+
+	void GetKnockOut(int damage, std::vector<std::string>& actions) override;
+	void KnockOut(std::string& target, std::vector<std::string>& actions) override;
 
 public:
 
 	bool hostile;
+
+private:
+
+	int targetTime = 5;
 };

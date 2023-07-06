@@ -15,9 +15,9 @@ public:
 	World();
 	~World();
 
-	bool Play(std::vector<std::string>& actions);
-	void Loop();
-	bool ExecuteActions(std::vector<std::string>& actions);
+	void Play(std::vector<std::string>& actions);
+	void Loop(std::vector<std::string>& actions);
+	void ExecuteActions(std::vector<std::string>& actions);
 	//INPUT
 	bool HandleInput(std::string& inputs, std::vector<std::string>& arg);
 

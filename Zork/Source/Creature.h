@@ -13,12 +13,13 @@ public:
 	Creature(EntityType type, const char* name, const char* description, Room* location, int level = 1);
 	virtual ~Creature();
 
-	virtual void Update();
+	virtual void Update(int dt, std::vector<std::string>& actions);
 
 	virtual void Go(std::string& dir);
-	virtual void Attack(std::string& target);
+	virtual void GetKnockOut(int damage, std::vector<std::string>& actions);
+	virtual void KnockOut(std::string& target, std::vector<std::string>& actions);
 
-	bool isAlive() const;
+	bool isUnconscious() const;
 
 public:
 	//TODO: RPG CLASS SYSTEM Should i do it??
